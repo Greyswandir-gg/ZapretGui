@@ -1,0 +1,5 @@
+﻿{
+  "zapretPath": "C:\\Tools\\zapret-discord-youtube",
+  "generalMask": "general (*.bat)",
+  "serviceScript": "service.bat"
+}

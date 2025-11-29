@@ -1,244 +1,4 @@
-### Role
-
-Act as an experienced C#/.NET principal engineer and prompt-driven refactoring assistant for a Windows desktop project.
-
-### Task
-
-Design and implement the `zapret-gui` solution: a WPF mini-Discord UI that controls the external `zapret-discord-youtube` tool exclusively via a JSON-speaking console adapter `zapret-cli.exe`.
-
-### Hard Rules (added)
-
-1. **You must never modify, write, or delete any file inside the external `zapret-discord-youtube` folder.**
-   Read-only access is allowed. All state, configs, logs, caches must exist only inside our repo or inside `%AppData%\zapret-gui`.
-2. **All interactions with zapret go ONLY through process execution and reading stdout/stderr.**
-   The GUI is strictly forbidden from calling BAT files directly.
-3. **If `zapretPath` does not exist or is invalid, CLI must return JSON:**
-   `{ "ok": false, "error": "invalid_zapret_path" }`
-   and exit with non-zero code.
-   GUI must not crash and must display a user-friendly error state.
-4. **The active strategy is stored ONLY in a local JSON file (`%AppData%\zapret-gui\last-state.json` or next to CLI).**
-   Storing state inside the zapret folder is strictly forbidden.
-5. **Do not invent undocumented zapret commands or behaviors.**
-   If information is missing, ask clarifying questions.
-
-### Context
-
-* Repository scope: whole project.
-* Relevant files / functions:
-
-  * Target structure:
-
-    ```
-    zapret-gui/
-      docs/
-        architecture.md
-        zapret-cli-spec.md
-      src/
-        ZapretCli/        ← C# console app (CLI adapter to zapret)
-        ZapretGui/        ← C# WPF app (mini-Discord UI, MVVM)
-      config/
-        zapret-adapter.example.json
-      .editorconfig
-      README.md
-    ```
-* External tool lives outside and must NOT be modified:
-
-  ```
-  C:\Tools\
-    zapret-discord-youtube\     ← downloaded archive, user updates at will
-    zapret-gui\                 ← our repo/build output
-  ```
-* Adapter config (minimum):
-
-  ```json
-  {
-    "zapretPath": "C:\\Tools\\zapret-discord-youtube",
-    "generalMask": "general (*.bat)",
-    "serviceScript": "service.bat"
-  }
-  ```
-* Config discovery order:
-
-  1. `--config "path\to\zapret-adapter.json"`
-  2. env var `ZAPRET_ADAPTER_CONFIG`
-  3. `zapret-adapter.json` next to `zapret-cli.exe`
-
-### CLI Requirements
-
-Commands to implement now:
-
-* `status`
-* `list-strategies`
-* `run-strategy`
-* `stop`
-
-JSON formats:
-
-`status`:
-
-```json
-{
-  "ok": true,
-  "state": {
-    "isRunning": true,
-    "activeStrategy": "general (ALT3).bat",
-    "gameFilter": "unknown",
-    "ipsetMode": "unknown",
-    "processes": [ { "name": "winws.exe", "pid": 1234 } ]
-  }
-}
-```
-
-`list-strategies`:
-
-```json
-{
-  "ok": true,
-  "strategies": [
-    {
-      "fileName": "general (ALT).bat",
-      "displayName": "ALT",
-      "path": "C:\\Tools\\zapret-discord-youtube\\general (ALT).bat"
-    }
-  ]
-}
-```
-
-`run-strategy`:
-
-```json
-{ "ok": true, "started": true, "strategy": "general (ALT3).bat" }
-```
-
-`stop`:
-
-```json
-{
-  "ok": true,
-  "stoppedProcesses": [ { "name": "winws.exe", "pid": 1234 } ]
-}
-```
-
-Process rules:
-
-* Detect running via processes: `winws.exe`, `winws64.exe`, etc.
-* Kill them on `stop` before starting a new strategy.
-* Start via `cmd.exe /c "<file>"`, `WorkingDirectory = zapretPath`, `UseShellExecute = false`.
-
-Common CLI behavior:
-
-* Output **only JSON** to stdout, never text.
-* Errors must:
-
-  * exit with non-zero code
-  * output: `{ "ok": false, "error": "message", "details": "..." }`
-* No writes to zapret folder.
-  All local state stored in `%AppData%\zapret-gui` or beside `zapret-cli.exe`.
-
-### WPF (ZapretGui) Requirements
-
-* Tech: C# (.NET 6 or .NET 8), WPF, MVVM.
-* Views/ViewModels:
-
-  * `MainWindow.xaml` + `MainViewModel`
-  * Tabs: `StrategiesViewModel`, `ResourcesViewModel` (stub), `DiagnosticsViewModel`, `SettingsViewModel`
-
-Layout:
-
-* Discord-like dark theme:
-
-  * window/sidebar `#202225`
-  * content `#2f3136`
-  * accent `#5865f2`
-  * corner radius 4–8px
-* Left sidebar with “channels”:
-
-  * `# strategies`
-  * `# resources`
-  * `# diagnostics`
-  * `# settings`
-
-Strategies tab:
-
-* Left: list from `zapret-cli list-strategies`
-* Right:
-
-  * status from `zapret-cli status`
-  * On/Off toggle → `run-strategy` / `stop`
-  * “Apply strategy” button
-* VM fields:
-
-  * `ObservableCollection<StrategyItem> Strategies`
-  * `StrategyItem SelectedStrategy`
-  * `bool IsRunning`
-  * Commands: `RefreshStatus`, `RunSelected`, `Stop`
-
-Diagnostics tab:
-
-* Buttons: “Update status”, “Run diagnostics” (stub)
-* Log of CLI calls: timestamp + command + result
-
-Resources tab:
-
-* Placeholder: “TODO: управление списками доменов и IP”
-
-Settings tab:
-
-* Folder picker for `zapretPath`
-* Save config
-* “Test connection” → `zapret-cli status`
-
-### Architectural Requirements
-
-* GUI must **never** read or execute zapret BAT files directly.
-* Only CLI interacts with zapret.
-* Absolute prohibition on modifying the zapret folder.
-* Path separators:
-
-  * JSON: escape as `"C:\\\\path\\\\..."`.
-  * Command-line: regular Windows syntax is allowed.
-
-### Guidance for Codex
-
-1. Always follow Structured CoT:
-   plan → implement → self-review → improve once.
-2. If information is missing, ask questions before coding.
-3. Provide diffs for existing files; provide full code for new files.
-4. Keep output under 500 new lines; split into parts if needed.
-5. Ensure clean architecture:
-
-   * `ZapretCli`:
-
-     * `ZapretConfig`
-     * `CliResult<T>`
-     * `IZapretProcessRunner` + implementation
-     * `IStrategyRepository` + implementation
-     * `ILastStateStore` + implementation
-     * command dispatcher (System.CommandLine)
-     * strict JSON printer
-   * `ZapretGui`:
-
-     * MVVM
-     * async CLI invocations
-     * diagnostics log
-     * theming resources
-6. Error handling:
-
-   * Invalid paths → `{ "ok": false, "error": "invalid_zapret_path" }`
-   * Missing strategy → `{ "ok": false, "error": "strategy_not_found" }`
-7. Tests:
-
-   * config discovery
-   * JSON parsing/serialization
-   * mocked process detection
-   * basic e2e CLI tests (dry-run mocks)
-
-### Setup Script
-
-(unchanged)
-
-```bash
-# Create solution and projects
+# Create solution and projects (if starting from scratch)
 dotnet new sln -n zapret-gui
 mkdir -p src/ZapretCli src/ZapretGui config docs
 
@@ -247,19 +7,19 @@ dotnet new console -n ZapretCli -o src/ZapretCli
 # WPF app
 dotnet new wpf -n ZapretGui -o src/ZapretGui
 
-# Tests
-dotnet new xunit -n ZapretCli.Tests -o src/ZapretCli.Tests
-dotnet new xunit -n ZapretGui.Tests -o src/ZapretGui.Tests
+# Tests (optional)
+dotnet new xunit -n ZapretCli.Tests -o tests/ZapretCli.Tests
+dotnet new xunit -n ZapretGui.Tests -o tests/ZapretGui.Tests
 
 # Solution references
 dotnet sln zapret-gui.sln add src/ZapretCli/ZapretCli.csproj
 dotnet sln zapret-gui.sln add src/ZapretGui/ZapretGui.csproj
-dotnet sln zapret-gui.sln add src/ZapretCli.Tests/ZapretCli.Tests.csproj
-dotnet sln zapret-gui.sln add src/ZapretGui.Tests/ZapretGui.Tests.csproj
+dotnet sln zapret-gui.sln add tests/ZapretCli.Tests/ZapretCli.Tests.csproj
+dotnet sln zapret-gui.sln add tests/ZapretGui.Tests/ZapretGui.Tests.csproj
 
 # Project references
-dotnet add src/ZapretCli.Tests/ZapretCli.Tests.csproj reference src/ZapretCli/ZapretCli.csproj
-dotnet add src/ZapretGui.Tests/ZapretGui.Tests.csproj reference src/ZapretGui/ZapretGui.csproj
+dotnet add tests/ZapretCli.Tests/ZapretCli.Tests.csproj reference src/ZapretCli/ZapretCli.csproj
+dotnet add tests/ZapretGui.Tests/ZapretGui.Tests.csproj reference src/ZapretGui/ZapretGui.csproj
 
 # Useful packages
 dotnet add src/ZapretCli/ZapretCli.csproj package System.CommandLine --version 2.0.0-beta4.22272.1
@@ -276,4 +36,3 @@ cat > config/zapret-adapter.example.json <<EOF
   "serviceScript": "service.bat"
 }
 EOF
-```

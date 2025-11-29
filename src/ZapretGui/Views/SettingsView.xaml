@@ -1,0 +1,38 @@
+<UserControl x:Class="ZapretGui.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+  <StackPanel>
+    <TextBlock Text="Настройки" FontSize="18" FontWeight="Bold" />
+    <TextBlock Text="Путь до zapret-discord-youtube и конфиг CLI" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,8" />
+    <TextBlock Text="Укажите папку, куда вы распаковали zapret-discord-youtube (там должны лежать файлы general*.bat и service.bat)."
+               Foreground="{StaticResource TextSecondary}"
+               TextWrapping="Wrap"
+               Margin="0,0,0,12" />
+
+    <TextBlock Text="zapretPath" />
+    <DockPanel Margin="0,0,0,8">
+      <TextBox Text="{Binding ZapretPath, UpdateSourceTrigger=PropertyChanged}" Height="32"
+               Background="#202225" Foreground="{StaticResource TextPrimary}" BorderBrush="#303238" />
+      <Button Content="Обзор" DockPanel.Dock="Right" Width="80" Margin="6,0,0,0"
+              Command="{Binding BrowseZapretPathCommand}" />
+    </DockPanel>
+
+    <TextBlock Text="generalMask" />
+    <TextBox Text="{Binding GeneralMask, UpdateSourceTrigger=PropertyChanged}" Height="32"
+             Background="#202225" Foreground="{StaticResource TextPrimary}" BorderBrush="#303238" Margin="0,0,0,8" />
+
+    <TextBlock Text="serviceScript" />
+    <TextBox Text="{Binding ServiceScript, UpdateSourceTrigger=PropertyChanged}" Height="32"
+             Background="#202225" Foreground="{StaticResource TextPrimary}" BorderBrush="#303238" Margin="0,0,0,12" />
+
+    <WrapPanel ItemWidth="140" ItemHeight="38" Margin="0,0,0,8">
+      <Button Content="Сохранить" Width="140" Command="{Binding SaveSettingsCommand}" />
+      <Button Content="Проверить соединение" Width="180" Command="{Binding TestConnectionCommand}" />
+    </WrapPanel>
+
+    <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" />
+  </StackPanel>
+</UserControl>
