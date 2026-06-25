@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Заглушка работы художника</title>
+  <desc id="desc">Абстрактная теплая композиция для карточки портфолио.</desc>
+  <rect width="800" height="600" fill="#f4dcc5"/>
+  <circle cx="610" cy="150" r="120" fill="#d98653" opacity=".75"/>
+  <path d="M70 520 C220 320 330 420 440 250 S650 130 760 390 L760 600 L70 600 Z" fill="#7f4b33" opacity=".82"/>
+  <path d="M120 120 Q260 60 360 180 T610 220" fill="none" stroke="#2d1d14" stroke-width="22" stroke-linecap="round" opacity=".7"/>
+</svg>
