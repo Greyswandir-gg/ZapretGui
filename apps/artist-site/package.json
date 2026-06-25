@@ -1,0 +1,13 @@
+{
+  "name": "artist-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Artist portfolio and commission website prototype with a protected admin area scaffold.",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check assets/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

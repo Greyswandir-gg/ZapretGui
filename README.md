@@ -1,22 +1,29 @@
-## zapret-gui
+## Artist Portfolio Site
 
-WPF mini-Discord UI plus CLI adapter for `zapret-discord-youtube`.
+Репозиторий начинает переход от старого WPF-прототипа к сайту художника. Новое направление проекта зафиксировано в `AGENTS.md`: публичное портфолио работ, возможность заказать работу напрямую у автора и защищенный административный блок для управления контентом.
 
-- `ZapretCli` — JSON-only adapter with commands: `status`, `list-strategies`, `run-strategy`, `stop`.
-- `ZapretGui` — MVVM WPF front-end that calls `zapret-cli.exe` only.
-- Config example: `config/zapret-adapter.example.json`.
+### Новый web-прототип
 
-### Quick start
+Первичная реализация находится в `apps/artist-site`:
 
-```powershell
-# build
-dotnet build zapret-gui.sln
+- публичная главная страница с портфолио работ;
+- фильтрация работ по категориям;
+- форма подготовки заявки на заказ;
+- черновик административного блока с временной клиентской защитой;
+- JSON-контракт для работ в `apps/artist-site/data/artworks.json`.
 
-# run CLI
-dotnet run --project src/ZapretCli -- list-strategies --config config/zapret-adapter.example.json
-
-# run GUI
-dotnet run --project src/ZapretGui
+```bash
+npm start --prefix apps/artist-site
 ```
 
-State/config files live under `%AppData%\zapret-gui`. The zapret folder is never modified by this repo.
+Проверка синтаксиса:
+
+```bash
+npm run check --prefix apps/artist-site
+```
+
+> Важно: текущая административная защита является только прототипом. Перед production-деплоем необходимо подключить серверную авторизацию, безопасное хранение секретов и полноценный API для загрузки и редактирования работ.
+
+### Legacy
+
+Старые проекты `ZapretCli` и `ZapretGui` пока остаются в репозитории до отдельного решения об их удалении или миграции структуры.

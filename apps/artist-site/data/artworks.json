@@ -1,0 +1,29 @@
+[
+  {
+    "id": "sunny-portrait",
+    "title": "Солнечный портрет",
+    "category": "Картины",
+    "year": "2025",
+    "description": "Декоративный портрет в теплой палитре для примера наполнения галереи.",
+    "image": "assets/placeholder.svg",
+    "published": true
+  },
+  {
+    "id": "friendly-caricature",
+    "title": "Дружеский шарж",
+    "category": "Шаржи",
+    "year": "2026",
+    "description": "Легкий шарж по фотографии, который показывает будущий формат заказов.",
+    "image": "assets/placeholder.svg",
+    "published": true
+  },
+  {
+    "id": "city-sketch",
+    "title": "Городской скетч",
+    "category": "Рисунки",
+    "year": "2024",
+    "description": "Быстрый рисунок городской сцены для демонстрации категории работ.",
+    "image": "assets/placeholder.svg",
+    "published": true
+  }
+]

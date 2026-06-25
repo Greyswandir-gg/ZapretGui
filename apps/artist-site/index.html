@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Мастерская художника</title>
+    <meta name="description" content="Портфолио художника: картины, шаржи, рисунки и индивидуальные заказы напрямую у автора." />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Основная навигация">
+        <a class="logo" href="#top">Мастерская</a>
+        <div class="nav__links">
+          <a href="#portfolio">Работы</a>
+          <a href="#commission">Заказать</a>
+          <a href="#admin">Админ</a>
+        </div>
+      </nav>
+      <section class="hero" id="top">
+        <p class="eyebrow">Картины · шаржи · рисунки</p>
+        <h1>Авторские работы и заказы напрямую у художника</h1>
+        <p>Сайт собирает портфолио автора, объясняет формат заказа и готовит основу для защищенной админ-панели.</p>
+        <a class="button" href="#commission">Обсудить заказ</a>
+      </section>
+    </header>
+
+    <main>
+      <section class="section" id="portfolio">
+        <div class="section__header">
+          <p class="eyebrow">Портфолио</p>
+          <h2>Опубликованные работы</h2>
+          <p>Данные сейчас загружаются из JSON-файла, чтобы будущий агент мог заменить источник на CMS, БД или API без переписывания верстки.</p>
+        </div>
+        <div class="filters" id="categoryFilters" aria-label="Фильтр по категориям"></div>
+        <div class="gallery" id="gallery" aria-live="polite"></div>
+      </section>
+
+      <section class="section commission" id="commission">
+        <div>
+          <p class="eyebrow">Заказ работы</p>
+          <h2>Расскажите автору о вашей идее</h2>
+          <p>Форма пока не отправляет данные на сервер: она фиксирует структуру будущей заявки и поля, которые нужно будет подключить к backend/API.</p>
+        </div>
+        <form class="card form" id="commissionForm">
+          <label>Имя<input name="name" autocomplete="name" required /></label>
+          <label>Контакт<input name="contact" placeholder="Email, Telegram или телефон" required /></label>
+          <label>Формат<select name="type"><option>Картина</option><option>Шарж</option><option>Рисунок</option></select></label>
+          <label>Описание идеи<textarea name="details" rows="5" required></textarea></label>
+          <button class="button" type="submit">Подготовить заявку</button>
+          <p class="form__status" id="formStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="section admin" id="admin">
+        <div class="section__header">
+          <p class="eyebrow">Защищенный блок</p>
+          <h2>Черновик админ-панели</h2>
+          <p>Временная клиентская защита нужна только для прототипа. При подключении сервера замените ее настоящей авторизацией и храните секреты вне репозитория.</p>
+        </div>
+        <div class="admin-grid">
+          <form class="card form" id="adminLogin">
+            <label>Пароль администратора<input name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="button" type="submit">Войти</button>
+            <p class="form__status" id="adminStatus" role="status"></p>
+          </form>
+          <div class="card admin-panel" id="adminPanel" hidden>
+            <h3>Управление работами</h3>
+            <p>Следующий шаг — подключить загрузку файлов, CRUD работ и редактирование текстовых блоков через серверный API.</p>
+            <ul id="adminArtworkList"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">© <span id="year"></span> Мастерская художника. Сделано для публикации работ и приема заказов.</footer>
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>
